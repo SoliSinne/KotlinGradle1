@@ -8,6 +8,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.json.Json
 import org.example.api.Decision
+import org.example.api.InputData
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
@@ -27,6 +28,11 @@ fun main() {
                 val decision = Json.decodeFromString<Decision>(call.receiveText())
                 println("Decision: $decision, ${Clock.System.now()}")
                 call.respondText(decision.toString(), ContentType.Text.Plain, HttpStatusCode.Created)
+            }
+            post("/check") {
+                val inputData = Json.decodeFromString<InputData>(call.receiveText())
+                println("InputData: $inputData, ${Clock.System.now()}")
+                call.respondText("OK", ContentType.Text.Plain, HttpStatusCode.Created)
             }
         }
     }.start(wait = true)
