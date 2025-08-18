@@ -6,16 +6,12 @@ import io.ktor.server.netty.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import org.example.api.Decision
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
-@Serializable
-data class Decision(
-    val expected: Int,
-    val actual: Int,
-    val decision: String
-)
-
+@OptIn(ExperimentalTime::class)
 fun main() {
     embeddedServer(Netty, 8080) {
         routing {
@@ -27,9 +23,10 @@ fun main() {
                 val decision = Decision(1, 0, decision = "NOT")
                 call.respondText(decision.toString(), ContentType.Text.Plain, HttpStatusCode.OK)
             }
-            post("/decision") {
+            post("/decide") {
                 val decision = Json.decodeFromString<Decision>(call.receiveText())
-                println("Decision: $decision")
+                println("Decision: $decision, ${Clock.System.now()}")
+                call.respondText(decision.toString(), ContentType.Text.Plain, HttpStatusCode.Created)
             }
         }
     }.start(wait = true)
